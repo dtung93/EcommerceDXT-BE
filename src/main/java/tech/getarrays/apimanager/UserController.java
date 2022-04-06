@@ -35,6 +35,8 @@ import java.util.Optional;
 public class UserController {
     @Autowired
 private UserService userService;
+
+
     @GetMapping("/user/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER') or hasRole('MASTER')")
     public ResponseEntity findUser(@PathVariable("id") Integer id) {
@@ -43,7 +45,7 @@ private UserService userService;
     }
 
     @PutMapping("/user/update")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER') or hasRole('MASTER')")
+    @PreAuthorize("hasAnyRole('USER','MODERATOR','ADMIN','MASTER')")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         User updateUser = userService.updateUser(user);
         return new ResponseEntity<>(updateUser, HttpStatus.OK);
@@ -69,7 +71,7 @@ private UserService userService;
             if(username==null)
             { pageProds = (Page<User>) userService.getUsers(paging);}
             else
-            { pageProds=userService.findUserByUsername(username,paging);}
+            { pageProds=userService.findUserByUsernameContaining(username,paging);}
             users= pageProds.getContent();
             Map<String,Object> response=new HashMap<>();
             response.put("users",users);

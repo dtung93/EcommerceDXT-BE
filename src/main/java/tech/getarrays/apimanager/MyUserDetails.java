@@ -18,17 +18,25 @@ public class MyUserDetails implements UserDetails {
     private Long id;
     private String username;
     private String email;
+    private String address;
+    private String phone;
+    private String avatar;
     @JsonIgnore
     private String password;
+
     private Collection<? extends GrantedAuthority> authorities;
-    public MyUserDetails(Integer id, String username, String email, String password,
+    public MyUserDetails(Integer id, String username, String email, String password, String address,String phone, String avatar,
                          Collection<? extends GrantedAuthority> authorities) {
         this.id = Long.valueOf(id);
         this.username = username;
         this.email = email;
         this.password = password;
+        this.avatar=avatar;
+        this.address=address;
+        this.phone=phone;
         this.authorities = authorities;
     }
+
     public static MyUserDetails build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
@@ -38,6 +46,9 @@ public class MyUserDetails implements UserDetails {
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getPhone(),
+                user.getAvatar(),
+                user.getAddress(),
                 authorities);
     }
     @Override
@@ -50,6 +61,9 @@ public class MyUserDetails implements UserDetails {
     public String getEmail() {
         return email;
     }
+    public String getAddress(){return address;}
+    public String getPhone(){return phone;}
+    public String getAvatar(){return avatar;}
     @Override
     public String getPassword() {
         return password;

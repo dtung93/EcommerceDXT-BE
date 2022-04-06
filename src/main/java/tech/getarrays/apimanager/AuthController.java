@@ -7,7 +7,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tech.getarrays.apimanager.exception.TokenRefreshException;
 import tech.getarrays.apimanager.jwt.JwtUtils;
 import tech.getarrays.apimanager.model.ERole;
@@ -17,13 +19,16 @@ import tech.getarrays.apimanager.model.User;
 import tech.getarrays.apimanager.payload.*;
 import tech.getarrays.apimanager.repo.RoleRepo;
 import tech.getarrays.apimanager.repo.UserRepo;
+import tech.getarrays.apimanager.service.FileUpLoadService;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.tomcat.jni.SSL.setPassword;
 
 
 @RestController
@@ -42,7 +47,9 @@ public class AuthController {
     @Autowired
     RoleRepo roleRepo;
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
+                                          @RequestParam("avatar") MultipartFile multipartFile
+                                          ) throws IOException {
         if (userRepo.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
@@ -52,11 +59,24 @@ public class AuthController {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
+
         }
+        if(userRepo.existsByPhone(signUpRequest.getPhone())){
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Phone is already in use!"));
+        }
+
+
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+        User user = new User();
+        user.setUsername(signUpRequest.getUsername());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setAddress(signUpRequest.getAddress());
+        user.setPhone(signUpRequest.getPhone());
+        String fileName= StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        user.setAvatar(fileName);
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null) {
@@ -89,9 +109,12 @@ public class AuthController {
             });
         }
         user.setRoles(roles);
-        userRepo.save(user);
+       userRepo.save(user);
+       String uploadDir="user-photos/" + userRepo.save(user).getId();
+      FileUpLoadService.saveFile(uploadDir,fileName,multipartFile);
         return ResponseEntity.ok(new MessageResponse("Your new account is created!"));
     }
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         System.out.println(loginRequest.getUsername()+" "+ loginRequest.getPassword());
@@ -104,8 +127,16 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                 .collect(Collectors.toList());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-        return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-                userDetails.getUsername(), userDetails.getEmail(), roles));
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                refreshToken.getToken(),
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                userDetails.getPhone(),
+                userDetails.getAvatar(),
+                userDetails.getAddress(),
+                roles
+ ));
     }
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {

@@ -1,5 +1,9 @@
 package tech.getarrays.apimanager.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -7,12 +11,16 @@ import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Table(	name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "email")
+                @UniqueConstraint(columnNames = "email"),
+                @UniqueConstraint(columnNames = "phone")
         })
+@Getter
+@Setter
+@Entity
+
 public class User {
 
     @Id
@@ -32,6 +40,17 @@ public class User {
     @Size(max = 500)
     private String password;
 
+    @Size(max=64)
+    private String avatar;
+
+
+
+    @Size(max=200)
+    private String address;
+
+    @Size(max=15)
+    private String phone;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(	name = "user_roles",
@@ -40,41 +59,11 @@ public class User {
     )
 
     private Set<Role> roles = new HashSet<>();
-    public User() {
+    @Transient
+    public String getAvatarImagePath() {
+        if (avatar == null || id == null) return null;
+
+        return "/user-photos/" + id + "/" + avatar;
     }
-    public User(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
-    public Integer getId() {
-        return id;
-    }
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public String getUsername() {
-        return username;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public Set<Role> getRoles() {
-        return roles;
-    }
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
+
 }
