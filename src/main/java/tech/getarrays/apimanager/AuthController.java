@@ -109,8 +109,8 @@ public class AuthController {
             });
         }
         user.setRoles(roles);
-       userRepo.save(user);
-       String uploadDir="user-photos/" + userRepo.save(user).getId();
+        User savedUser= userRepo.save(user);
+       String uploadDir="user-photos/" + savedUser.getId();
       FileUpLoadService.saveFile(uploadDir,fileName,multipartFile);
         return ResponseEntity.ok(new MessageResponse("Your new account is created!"));
     }

@@ -7,7 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,19 +19,18 @@ import tech.getarrays.apimanager.payload.ResponseFile;
 import tech.getarrays.apimanager.service.FileStorageService;
 
 @Controller
-@CrossOrigin("http://localhost:8080")
 public class FileController {
     @Autowired
     private FileStorageService storageService;
     @PostMapping("/upload")
-    public ResponseEntity<MessageResponse> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<MessageResponse> uploadFile(@RequestParam("avatar") MultipartFile multiPartFile) {
         String message = "";
         try {
-            storageService.store(file);
-            message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            storageService.store(multiPartFile);
+            message = "Uploaded the file successfully: " + multiPartFile.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse(message));
         } catch (Exception e) {
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+            message = "Could not upload the file: " + multiPartFile.getOriginalFilename() + "!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new MessageResponse(message));
         }
     }
