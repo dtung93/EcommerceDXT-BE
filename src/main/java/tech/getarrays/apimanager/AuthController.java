@@ -47,9 +47,7 @@ public class AuthController {
     @Autowired
     RoleRepo roleRepo;
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
-                                          @RequestParam("avatar") MultipartFile multipartFile
-                                          ) throws IOException {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepo.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
@@ -75,8 +73,9 @@ public class AuthController {
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
         user.setAddress(signUpRequest.getAddress());
         user.setPhone(signUpRequest.getPhone());
-        String fileName= StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        user.setAvatar(fileName);
+//        String fileName= StringUtils.cleanPath(multipartFile.getOriginalFilename());
+//        user.setAvatar(fileName);
+        user.setAvatar(signUpRequest.getAvatar());
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null) {
@@ -109,9 +108,9 @@ public class AuthController {
             });
         }
         user.setRoles(roles);
-        User savedUser= userRepo.save(user);
-       String uploadDir="user-photos/" + savedUser.getId();
-      FileUpLoadService.saveFile(uploadDir,fileName,multipartFile);
+        userRepo.save(user);
+//       String uploadDir="user-photos/" + savedUser.getId();
+//      FileUpLoadService.saveFile(uploadDir,fileName,multipartFile);
         return ResponseEntity.ok(new MessageResponse("Your new account is created!"));
     }
 

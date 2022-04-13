@@ -12,6 +12,6 @@ import tech.getarrays.apimanager.payload.MessageResponse;
 public class FileUploadExceptionalAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<MessageResponse> handleMaxSizeException(MaxUploadSizeExceededException exc) {
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new MessageResponse("Filed size must be less than 1MB!"));
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new MessageResponse("Filed size must be less than 700KB!"));
     }
 }

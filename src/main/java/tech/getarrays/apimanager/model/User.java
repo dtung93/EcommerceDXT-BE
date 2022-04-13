@@ -57,7 +57,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-
     private Set<Role> roles = new HashSet<>();
     @Transient
     public String getAvatarImagePath() {
@@ -65,5 +64,8 @@ public class User {
 
         return "/user-photos/" + id + "/" + avatar;
     }
+
+    @Column(name="reset_password_token")
+    private String resetPasswordToken;
 
 }
