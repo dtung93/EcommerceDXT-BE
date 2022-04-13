@@ -38,14 +38,12 @@ private UserService userService;
 
 
     @GetMapping("/user/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER') or hasRole('MASTER')")
     public ResponseEntity findUser(@PathVariable("id") Integer id) {
         Optional<User> user = userService.findUserById(id);
         return new ResponseEntity(user, HttpStatus.OK);
     }
 
     @PutMapping("/user/update")
-    @PreAuthorize("hasAnyRole('USER','MODERATOR','ADMIN','MASTER')")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         User updateUser = userService.updateUser(user);
         return new ResponseEntity<>(updateUser, HttpStatus.OK);

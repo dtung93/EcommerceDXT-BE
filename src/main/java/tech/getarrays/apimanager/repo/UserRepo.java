@@ -21,7 +21,9 @@ public interface UserRepo extends CrudRepository <User,Integer>, JpaRepository<U
    @Modifying
    int updateUserRole(@Param("userId") Integer userId, @Param("id") Integer id);
 
+   public User findByEmail(String email);
 
+   public User findByResetPasswordToken(String token);
 
    Page<User> findByUsernameContaining(String username,Pageable pageable);
    Boolean existsByPhone(String phone);
