@@ -3,10 +3,8 @@ package tech.getarrays.apimanager;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tech.getarrays.apimanager.model.Product;
-import tech.getarrays.apimanager.model.User;
 import tech.getarrays.apimanager.service.ProductService;
 import tech.getarrays.apimanager.service.UserService;
 
@@ -19,11 +17,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @Transactional
-public class TestController {
+public class ProductController {
     private ProductService productService;
     private UserService userService;
 
-    public TestController(ProductService productService, UserService userService) {
+    public ProductController(ProductService productService, UserService userService) {
         this.productService = productService;
         this.userService = userService;
     }

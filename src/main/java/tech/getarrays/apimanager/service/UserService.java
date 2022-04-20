@@ -24,6 +24,19 @@ public class UserService {
         this.refreshRepo=refreshRepo;
         this.userRepo = userRepo;
     }
+
+    public boolean verifyUser(String verificationCode) {
+        User user = userRepo.findByVerificationCode(verificationCode);
+        if (user == null) {
+            return false;
+        } else {
+            user.setVerificationCode(null);
+            user.setEnabled(true);
+            userRepo.save(user);
+            return true;
+        }
+    }
+
     //Randomly generated a token to a user that has email address
   public void updateResetPasswordToken(String token, String email) throws UserNotFoundException {
         User user=userRepo.findByEmail(email);
@@ -45,7 +58,6 @@ public class UserService {
       BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
       String encodedPassword= passwordEncoder.encode(newPassword);
       user.setPassword(encodedPassword);
-
       user.setResetPasswordToken(null);
       userRepo.save(user);
   }

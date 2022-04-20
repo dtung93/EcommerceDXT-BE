@@ -13,7 +13,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MyUserDetails implements UserDetails {
-
+    private User user;
+    public MyUserDetails(User user){
+        this.user=user;
+    }
    private static final long serialVersionUID = 1L;
     private Long id;
     private String username;
@@ -21,12 +24,14 @@ public class MyUserDetails implements UserDetails {
     private String address;
     private String phone;
     private String avatar;
+    private boolean enabled;
     @JsonIgnore
     private String password;
 
+
     private Collection<? extends GrantedAuthority> authorities;
     public MyUserDetails(Integer id, String username, String email, String password, String address,String phone, String avatar,
-                         Collection<? extends GrantedAuthority> authorities) {
+                         Collection<? extends GrantedAuthority> authorities,boolean enabled) {
         this.id = Long.valueOf(id);
         this.username = username;
         this.email = email;
@@ -35,6 +40,7 @@ public class MyUserDetails implements UserDetails {
         this.address=address;
         this.phone=phone;
         this.authorities = authorities;
+        this.enabled=enabled;
     }
 
     public static MyUserDetails build(User user) {
@@ -49,7 +55,8 @@ public class MyUserDetails implements UserDetails {
                 user.getPhone(),
                 user.getAvatar(),
                 user.getAddress(),
-                authorities);
+                authorities,
+                user.isEnabled());
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -84,6 +91,8 @@ public class MyUserDetails implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
+
     @Override
     public boolean isEnabled() {
         return true;
