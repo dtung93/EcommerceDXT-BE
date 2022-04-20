@@ -73,16 +73,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint((AuthenticationEntryPoint) unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll().
-                antMatchers("/api/product/**").permitAll()
-                .antMatchers("/api/product/add").hasAnyRole("ADMIN","MODERATOR").antMatchers("/upload").permitAll().antMatchers("/files").permitAll()
+                .authorizeRequests().antMatchers("/api/auth/**","/api/verify-user/**","/api/reset-password","/api/forgot-password","/api/product/**","/api/products/**").permitAll()
+                .antMatchers("/api/product/add").hasAnyRole("ADMIN","MODERATOR").antMatchers("/upload","/files","/files/{id}").permitAll()
                 .antMatchers("/api//product/update").hasAnyRole("ADMIN","MODERATOR")
-                .antMatchers("/api/delete/**").hasAnyRole("ADMIN","MODERATOR")
-                .antMatchers("/files/**").permitAll().
-                antMatchers("/api/products/**").permitAll().
+                .antMatchers("/api/delete/**").hasAnyRole("ADMIN","MODERATOR").
                 antMatchers("/api/master").hasRole("MASTER").
                 antMatchers("/api/admin").hasRole("ADMIN").
-                antMatchers("api/role/**").hasAnyRole("MASTER","ADMIN").
+                antMatchers("/api/role/**").hasAnyRole("MASTER","ADMIN").
               anyRequest().authenticated();
         http.addFilterBefore((Filter) authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

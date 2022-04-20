@@ -16,6 +16,9 @@ import tech.getarrays.apimanager.model.User;
 import java.util.Optional;
 @Repository
 public interface UserRepo extends CrudRepository <User,Integer>, JpaRepository<User,Integer>, JpaSpecificationExecutor<User>, PagingAndSortingRepository<User,Integer> {
+ @Query(nativeQuery = true, value="SELECT * FROM users u where u.verification_code=:verifyCode")
+   public User findByVerificationCode(String verifyCode);
+
 
    @Query(nativeQuery=true, value="update user_roles set role_id=:id where user_id=:userId")
    @Modifying
@@ -23,7 +26,8 @@ public interface UserRepo extends CrudRepository <User,Integer>, JpaRepository<U
 
    public User findByEmail(String email);
 
-   public User findByResetPasswordToken(String token);
+   @Query(nativeQuery = true, value="SELECT * FROM users u where u.reset_password_token=:token")
+   public User findByResetPasswordToken(@Param("token") String token);
 
    Page<User> findByUsernameContaining(String username,Pageable pageable);
    Boolean existsByPhone(String phone);

@@ -8,22 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
-import tech.getarrays.apimanager.model.AuthenticationBean;
-import tech.getarrays.apimanager.model.Role;
 import tech.getarrays.apimanager.model.User;
+import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.repo.UserRepo;
 import tech.getarrays.apimanager.service.UserService;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +26,18 @@ import java.util.Optional;
 public class UserController {
     @Autowired
 private UserService userService;
+    @Autowired
+private UserRepo userRepo;
+
+    @GetMapping("/verify-user/{verifyCode}")
+    public ResponseEntity<String> getVerifyCode(@PathVariable("verifyCode") String verifyCode){
+        if (userService.verifyUser(verifyCode)){
+           return new ResponseEntity<>("Account successfully verified",HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("Invalid verification code. User not found",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
     @GetMapping("/user/{id}")
@@ -45,6 +48,7 @@ private UserService userService;
 
     @PutMapping("/user/update")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
+
         User updateUser = userService.updateUser(user);
         return new ResponseEntity<>(updateUser, HttpStatus.OK);
     }

@@ -68,4 +68,10 @@ public class User {
     @Column(name="reset_password_token")
     private String resetPasswordToken;
 
+    @Column(name = "verification_code", length = 40)
+    private String verificationCode;
+
+    private boolean enabled;
+
+
 }

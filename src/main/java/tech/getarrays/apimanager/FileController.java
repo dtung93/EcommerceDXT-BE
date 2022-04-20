@@ -25,6 +25,7 @@ public class FileController {
         try {
             storageService.store(multiPartFile);
             message = "Uploaded the file successfully: " + multiPartFile.getOriginalFilename();
+            System.out.println(multiPartFile);
             return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse(message));
         } catch (Exception e) {
             message = "Could not upload the file: " + multiPartFile.getOriginalFilename() + "!";
