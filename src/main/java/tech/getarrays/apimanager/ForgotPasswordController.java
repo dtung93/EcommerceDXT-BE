@@ -59,12 +59,12 @@ public class ForgotPasswordController {
         String subject = "Here's the link to reset your password";
 
         String content = "<p>Hello,</p>"
-                +"<span>token:" + token+ "</span>"
-                + "<p>We received a request to change your account password at DXT.</p>"
-                + "<p>Click the confirmation below to update your password:</p>"
+                +"<span>Confirmation code:" + token+ "</span>"
+                + "<p>Hello,we received a request to change your account password at DXT.</p>"
+                + "<p>Below is the link to update your password:</p>"
                 + "<p><a href=\"" + link + "\">Change my password</a></p>"
                 + "<br>"
-                + "<p>Please contact us if you"
+                + "<p>Please contact us at contact@dxt.com if you"
                 + " have not made the request.</p>";
 
         helper.setSubject(subject);

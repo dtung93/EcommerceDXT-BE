@@ -106,4 +106,8 @@ public class MyUserDetails implements UserDetails {
        MyUserDetails user = (MyUserDetails) o;
         return Objects.equals(id, user.id);
     }
+
+    public boolean getEnabled() {
+        return enabled;
+    }
 }

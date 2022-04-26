@@ -14,6 +14,7 @@ import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.repo.UserRepo;
 import tech.getarrays.apimanager.service.UserService;
 
+import javax.mail.Message;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
@@ -30,12 +31,12 @@ private UserService userService;
 private UserRepo userRepo;
 
     @GetMapping("/verify-user/{verifyCode}")
-    public ResponseEntity<String> getVerifyCode(@PathVariable("verifyCode") String verifyCode){
+    public MessageResponse getVerifyCode(@PathVariable("verifyCode") String verifyCode){
         if (userService.verifyUser(verifyCode)){
-           return new ResponseEntity<>("Account successfully verified",HttpStatus.OK);
+           return new MessageResponse("Account successfully verified!");
         }
         else{
-            return new ResponseEntity<>("Invalid verification code. User not found",HttpStatus.INTERNAL_SERVER_ERROR);
+            return new MessageResponse("Invalid token . User could not be found");
         }
     }
 
@@ -62,18 +63,18 @@ private UserRepo userRepo;
     @GetMapping("/admin/users")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MASTER')")
        public ResponseEntity<Map<String,Object>> getAllUsers(
-            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String usernameoremail,
             @RequestParam(defaultValue="0") int page,
             @RequestParam(defaultValue = "8") int size
     ){
         try{
             List<User> users;
             Pageable paging= (Pageable) PageRequest.of(page,size);
-            Page<User> pageProds ;
-            if(username==null)
+            Page<User> pageProds = null;
+            if(usernameoremail==null)
             { pageProds = (Page<User>) userService.getUsers(paging);}
             else
-            { pageProds=userService.findUserByUsernameContaining(username,paging);}
+            {pageProds=userService.searchUser(usernameoremail,paging);}
             users= pageProds.getContent();
             Map<String,Object> response=new HashMap<>();
             response.put("users",users);
