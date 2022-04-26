@@ -3,17 +3,18 @@ package tech.getarrays.apimanager.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.security.access.method.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.getarrays.apimanager.exception.UserNotFoundException;
 import tech.getarrays.apimanager.model.User;
+import tech.getarrays.apimanager.model.UserChangePass;
 import tech.getarrays.apimanager.repo.RefreshTokenRepo;
 import tech.getarrays.apimanager.repo.UserRepo;
 
 import javax.transaction.Transactional;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -86,7 +87,7 @@ public class UserService {
     public User updateUser(User user){
        return userRepo.save(user);
     }
-    
+
 
 
     @Transactional
@@ -95,4 +96,10 @@ public class UserService {
        userRepo.deleteById(id);
     }
 
+    public int changePassword(String username, String newPassword) {
+        return userRepo.changePassword(username,newPassword);
+    }
+    public String getPassword(String username){
+     return userRepo.findUserByUsername(username).getPassword();
+    }
 }

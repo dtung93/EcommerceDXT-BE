@@ -20,6 +20,15 @@ public interface UserRepo extends CrudRepository <User,Integer>, JpaRepository<U
    public User findByVerificationCode(String verifyCode);
 
 
+
+ @Query(nativeQuery = true, value="update users u set u.password=:newPassword where u.username=:username")
+ @Modifying
+int changePassword(String username, String newPassword);
+
+
+    public User findUserByUsername(String username);
+
+
    @Query(nativeQuery=true, value="update user_roles set role_id=:id where user_id=:userId")
    @Modifying
    int updateUserRole(@Param("userId") Integer userId, @Param("id") Integer id);

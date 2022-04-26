@@ -8,8 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tech.getarrays.apimanager.model.User;
+import tech.getarrays.apimanager.model.UserChangePass;
 import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.repo.UserRepo;
 import tech.getarrays.apimanager.service.UserService;
@@ -26,6 +28,8 @@ import java.util.Optional;
 @Transactional
 public class UserController {
     @Autowired
+    PasswordEncoder encoder;
+    @Autowired
 private UserService userService;
     @Autowired
 private UserRepo userRepo;
@@ -36,12 +40,25 @@ private UserRepo userRepo;
            return new MessageResponse("Account successfully verified!");
         }
         else{
-            return new MessageResponse("Invalid token . User could not be found");
+            return new MessageResponse("Invalid token . User could n{ot be found");
+        }
+    }
+    @PutMapping("user/change-password")
+    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR','USER','MASTER')")
+    public ResponseEntity<?> changePassword(@RequestBody UserChangePass user){
+        String password=userService.getPassword(user.getUsername());
+        boolean hasUsername=encoder.matches(user.getOldPassword(),password);
+        if(hasUsername) {
+            int updatedUser = userService.changePassword(user.getUsername(), encoder.encode(user.getNewPassword()));
+            return new ResponseEntity<>(updatedUser,HttpStatus.OK);
+        }
+       else{
+           return new ResponseEntity<>("You have entered a wrong password",HttpStatus.OK);
         }
     }
 
-
     @GetMapping("/user/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR','USER','MASTER')")
     public ResponseEntity findUser(@PathVariable("id") Integer id) {
         Optional<User> user = userService.findUserById(id);
         return new ResponseEntity(user, HttpStatus.OK);
