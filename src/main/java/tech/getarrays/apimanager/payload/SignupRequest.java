@@ -41,4 +41,6 @@ public class SignupRequest {
     @Size(max=64)
     private String avatar;
 
+    private boolean enabled;
+
 }

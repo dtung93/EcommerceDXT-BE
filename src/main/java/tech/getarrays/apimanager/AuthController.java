@@ -127,15 +127,78 @@ public class AuthController {
         sendVerificationEmail(user, siteUrl,user.getVerificationCode());
         return ResponseEntity.ok(new MessageResponse("Your new account is created!"));
     }
+    @PostMapping("/add-user")
+    public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signUpRequest,String siteUrl) throws MessagingException, UnsupportedEncodingException {
+        if (userRepo.existsByUsername(signUpRequest.getUsername())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("This username is already taken!"));
+        }
+        if (userRepo.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("This email is already taken!"));
+
+        }
+        if(userRepo.existsByPhone(signUpRequest.getPhone())){
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Phone numbers already in use!"));
+        }
+        User user = new User();
+        user.setUsername(signUpRequest.getUsername());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setAddress(signUpRequest.getAddress());
+        user.setPhone(signUpRequest.getPhone());
+//        String fileName= StringUtils.cleanPath(multipartFile.getOriginalFilename());
+//        user.setAvatar(fileName);
+        user.setAvatar(signUpRequest.getAvatar());
+        Set<String> strRoles = signUpRequest.getRole();
+        Set<Role> roles = new HashSet<>();
+        if (strRoles == null) {
+            Role userRole = roleRepo.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "admin":
+                        Role adminRole = roleRepo.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(adminRole);
+                        break;
+                    case "mod":
+                        Role modRole = roleRepo.findByName(ERole.ROLE_MODERATOR)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(modRole);
+                        break;
+                    case "master":
+                        Role masterRole = roleRepo.findByName(ERole.ROLE_MASTER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(masterRole);
+                        break;
+                    default:
+                        Role userRole = roleRepo.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(userRole);
+                }
+            });
+        }
+        user.setRoles(roles);
+        user.setEnabled(true);
+        userRepo.save(user);
+        return ResponseEntity.ok(new MessageResponse("New account succesfully added"));
+    }
+
   public void sendVerificationEmail(User user, String siteUrl,String token) throws MessagingException,UnsupportedEncodingException{
       String toAddress = user.getEmail();
       String fromAddress = "dxt@global.com";
       String senderName = "DXT";
       String subject = "Please verify your registration";
       String content = "Dear [[name]],<br>"
-              + "Please click the link below to verify your registration:<br>"
+              + "Your new account was created with this email. Please click the link below to confirm your registration:<br>"
               + "<h5><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h5>"
-              +"<div>token:"+token+"</div>"
               + "Thank you,<br>"
               + "DXT Global";
 
@@ -180,7 +243,8 @@ public class AuthController {
                 userDetails.getPhone(),
                 userDetails.getAvatar(),
                 userDetails.getAddress(),
-                roles
+                roles,
+                userDetails.getEnabled()
  ));
     }
     @PostMapping("/refreshtoken")

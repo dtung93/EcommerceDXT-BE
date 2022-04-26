@@ -74,10 +74,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .exceptionHandling().authenticationEntryPoint((AuthenticationEntryPoint) unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/api/auth/**","/api/verify-user/**","/api/reset-password","/api/forgot-password","/api/product/**","/api/products/**").permitAll()
-                .antMatchers("/api/product/add").hasAnyRole("ADMIN","MODERATOR").antMatchers("/upload","/files","/files/{id}").permitAll()
+                .antMatchers("/api/auth/add-user").hasAnyRole("ADMIN","MODERATOR","USER","MASTER").antMatchers("/api/product/add").hasAnyRole("ADMIN","MODERATOR").antMatchers("/upload","/files","/files/{id}").permitAll()
                 .antMatchers("/api//product/update").hasAnyRole("ADMIN","MODERATOR")
                 .antMatchers("/api/delete/**").hasAnyRole("ADMIN","MODERATOR").
-                antMatchers("/api/master").hasRole("MASTER").
+                antMatchers("/api/master","/api/auth/add-user").hasRole("MASTER").
                 antMatchers("/api/admin").hasRole("ADMIN").
                 antMatchers("/api/role/**").hasAnyRole("MASTER","ADMIN").
               anyRequest().authenticated();

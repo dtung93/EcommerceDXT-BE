@@ -3,6 +3,7 @@ package tech.getarrays.apimanager.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.access.method.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -78,8 +79,9 @@ public class UserService {
     public Page<User> findUserByUsername(String username, Pageable pageable){
         return  (Page<User>)userRepo.findByUsername(username,pageable);
     }
-   public Page<User> findUserByUsernameContaining(String username,Pageable pageable){
-        return (Page<User>)userRepo.findByUsernameContaining(username,pageable);
+
+   public Page<User> searchUser(String usernameoremail, Pageable paging){
+        return (Page<User>)userRepo.searchUser(usernameoremail,paging);
    }
     public User updateUser(User user){
        return userRepo.save(user);

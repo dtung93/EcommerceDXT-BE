@@ -28,8 +28,9 @@ public interface UserRepo extends CrudRepository <User,Integer>, JpaRepository<U
 
    @Query(nativeQuery = true, value="SELECT * FROM users u where u.reset_password_token=:token")
    public User findByResetPasswordToken(@Param("token") String token);
+   @Query(nativeQuery = true, value="SELECT * FROM users u where u.username like %:usernameoremail% or u.email like %:usernameoremail%")
+   Page<User> searchUser(String usernameoremail, Pageable pageable);
 
-   Page<User> findByUsernameContaining(String username,Pageable pageable);
    Boolean existsByPhone(String phone);
    Page<User> findByUsername(String username,Pageable pageable);
    Page<User> findById(Integer id, Pageable pageable);
