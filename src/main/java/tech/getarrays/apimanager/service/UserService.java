@@ -3,8 +3,6 @@ package tech.getarrays.apimanager.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.security.access.method.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -86,7 +84,7 @@ public class UserService {
     public User updateUser(User user){
        return userRepo.save(user);
     }
-    
+
 
 
     @Transactional
@@ -95,4 +93,10 @@ public class UserService {
        userRepo.deleteById(id);
     }
 
+    public int changePassword(String username, String newPassword) {
+        return userRepo.changePassword(username,newPassword);
+    }
+    public String getPassword(String username){
+     return userRepo.findUserByUsername(username).getPassword();
+    }
 }

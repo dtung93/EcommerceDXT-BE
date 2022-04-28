@@ -16,13 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tech.getarrays.apimanager.exception.TokenRefreshException;
 import tech.getarrays.apimanager.jwt.JwtUtils;
-import tech.getarrays.apimanager.model.ERole;
-import tech.getarrays.apimanager.model.RefreshToken;
-import tech.getarrays.apimanager.model.Role;
-import tech.getarrays.apimanager.model.User;
+import tech.getarrays.apimanager.model.*;
 import tech.getarrays.apimanager.payload.*;
 import tech.getarrays.apimanager.repo.RoleRepo;
 import tech.getarrays.apimanager.repo.UserRepo;
+import tech.getarrays.apimanager.service.CartService;
 import tech.getarrays.apimanager.service.FileUpLoadService;
 
 import javax.mail.MessagingException;
@@ -42,6 +40,8 @@ import static org.apache.tomcat.jni.SSL.setPassword;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    @Autowired
+    CartService cartService;
     @Autowired
     JavaMailSender mailSender;
     @Autowired
@@ -235,16 +235,23 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                 .collect(Collectors.toList());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
+        Cart cart=cartService.getCartByUsername(userDetails.getUsername());
+
+        userDetails.setCart(cart);
+
         return ResponseEntity.ok(new JwtResponse(jwt,
                 refreshToken.getToken(),
                 userDetails.getId(),
                 userDetails.getUsername(),
+                userDetails.getName(),
                 userDetails.getEmail(),
                 userDetails.getPhone(),
                 userDetails.getAvatar(),
                 userDetails.getAddress(),
                 roles,
-                userDetails.getEnabled()
+                userDetails.getEnabled(),
+                userDetails.getCart()
  ));
     }
     @PostMapping("/refreshtoken")
