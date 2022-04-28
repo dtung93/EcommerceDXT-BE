@@ -1,20 +1,26 @@
 package tech.getarrays.apimanager.model;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.annotation.processing.Generated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
-import javax.persistence.Id;
-import javax.persistence.Entity;
-import javax.persistence.Column;
+import java.util.Set;
 
 @Entity
-
+@Getter
+@Setter
 public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(nullable=false,updatable=false)
     private Long id;
     private String name;
+
+//    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
+//    private Set<Cart> carts;
+
+
     private String category;
     private String description;
     private String img;
@@ -97,17 +103,17 @@ public class Product implements Serializable {
         this.productcode = productcode;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", category='" + category + '\'' +
-                ", description='" + description + '\'' +
-                ", img='" + img + '\'' +
-                ", qty=" + qty +
-                ", price=" + price +
-                ", productcode='" + productcode + '\'' +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Product{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", category='" + category + '\'' +
+//                ", description='" + description + '\'' +
+//                ", img='" + img + '\'' +
+//                ", qty=" + qty +
+//                ", price=" + price +
+//                ", productcode='" + productcode + '\'' +
+//                '}';
+//    }
 }

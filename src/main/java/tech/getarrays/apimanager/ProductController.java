@@ -4,6 +4,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.getarrays.apimanager.model.Cart;
 import tech.getarrays.apimanager.model.Product;
 import tech.getarrays.apimanager.service.ProductService;
 import tech.getarrays.apimanager.service.UserService;
@@ -109,4 +110,5 @@ public class ProductController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

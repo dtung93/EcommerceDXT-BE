@@ -31,6 +31,10 @@ public class User {
     @Size(max = 20)
     private String username;
 
+
+    @Size(max=100)
+    private String name;
+
     @NotBlank
     @Size(max = 50)
     @Email
@@ -73,5 +77,7 @@ public class User {
 
     private boolean enabled;
 
+//   @OneToOne(mappedBy = "user",fetch=FetchType.LAZY)
+//    private Cart cart;
 
 }

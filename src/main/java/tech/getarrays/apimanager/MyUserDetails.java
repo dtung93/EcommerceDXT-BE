@@ -2,9 +2,12 @@ package tech.getarrays.apimanager;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import tech.getarrays.apimanager.model.Cart;
 import tech.getarrays.apimanager.model.User;
 
 import java.util.Collection;
@@ -12,6 +15,8 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 public class MyUserDetails implements UserDetails {
     private User user;
     public MyUserDetails(User user){
@@ -20,20 +25,23 @@ public class MyUserDetails implements UserDetails {
    private static final long serialVersionUID = 1L;
     private Long id;
     private String username;
+    private String name;
     private String email;
     private String address;
     private String phone;
     private String avatar;
     private boolean enabled;
+    private Cart cart;
     @JsonIgnore
     private String password;
 
 
     private Collection<? extends GrantedAuthority> authorities;
-    public MyUserDetails(Integer id, String username, String email, String password, String address,String phone, String avatar,
+    public MyUserDetails(Integer id, String username,String name, String email, String password, String address,String phone, String avatar,
                          Collection<? extends GrantedAuthority> authorities,boolean enabled) {
         this.id = Long.valueOf(id);
         this.username = username;
+        this.name=name;
         this.email = email;
         this.password = password;
         this.avatar=avatar;
@@ -50,6 +58,7 @@ public class MyUserDetails implements UserDetails {
         return new MyUserDetails(
                 Math.toIntExact(user.getId()),
                 user.getUsername(),
+                user.getName(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getPhone(),
@@ -57,6 +66,7 @@ public class MyUserDetails implements UserDetails {
                 user.getAddress(),
                 authorities,
                 user.isEnabled());
+
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,6 +75,7 @@ public class MyUserDetails implements UserDetails {
     public Long getId() {
         return id;
     }
+    public String getName(){return name;}
     public String getEmail() {
         return email;
     }

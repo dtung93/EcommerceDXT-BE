@@ -11,12 +11,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tech.getarrays.apimanager.model.User;
-import tech.getarrays.apimanager.model.UserChangePass;
+import tech.getarrays.apimanager.model.UserChangePassword;
 import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.repo.UserRepo;
 import tech.getarrays.apimanager.service.UserService;
 
-import javax.mail.Message;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +44,7 @@ private UserRepo userRepo;
     }
     @PutMapping("user/change-password")
     @PreAuthorize("hasAnyRole('ADMIN','MODERATOR','USER','MASTER')")
-    public ResponseEntity<?> changePassword(@RequestBody UserChangePass user){
+    public ResponseEntity<?> changePassword(@RequestBody UserChangePassword user){
         String password=userService.getPassword(user.getUsername());
         boolean hasUsername=encoder.matches(user.getOldPassword(),password);
         if(hasUsername) {
