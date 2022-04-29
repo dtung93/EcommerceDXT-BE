@@ -22,4 +22,7 @@ public class CartProduct {
 
     @Column(name="quantity")
     private Integer quantity;
+
+    @Column(name="total")
+    private Double total;
 }
