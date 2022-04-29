@@ -83,7 +83,7 @@ public class Product implements Serializable {
         return qty;
     }
 
-    public void setQty(Number qty) {
+    public void setQty(Integer qty) {
         this.qty = qty;
     }
 
@@ -91,7 +91,7 @@ public class Product implements Serializable {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Number price) {
         this.price = price;
     }
 

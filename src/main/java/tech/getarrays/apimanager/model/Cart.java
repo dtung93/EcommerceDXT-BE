@@ -30,7 +30,7 @@ public class Cart implements Serializable {
  private String username;
 
  @OneToMany(cascade = CascadeType.ALL,fetch =FetchType.LAZY)
- @JoinColumn(name="cart_product_id",referencedColumnName = "id")
+ @JoinColumn(name="cart_id",referencedColumnName = "id")
  private Set<CartProduct> items;
 
  @Column(name="totalItems")
@@ -41,5 +41,13 @@ public class Cart implements Serializable {
 
  @Column(name="status")
  private boolean status;
+
+ public void addCartProduct(CartProduct cp){
+   this.items.add(cp);
+ }
+
+ public void removeCartProduct(CartProduct cp){
+  this.items.remove(cp);
+ }
 
 }
