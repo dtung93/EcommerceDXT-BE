@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.getarrays.apimanager.exception.ProductNotFoundException;
+import tech.getarrays.apimanager.model.Cart;
 import tech.getarrays.apimanager.repo.ProductRepo;
 import tech.getarrays.apimanager.model.Product;
 
@@ -50,5 +51,6 @@ public class ProductService {
     public Page<Product> findAllSortedByDescendingPrice(Pageable paging){
         return (Page<Product>) productRepo.findAllByOrderByPriceDesc(paging);
     }
+
     }
 

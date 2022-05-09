@@ -73,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint((AuthenticationEntryPoint) unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**","/api/verify-user/**","/api/reset-password","/api/forgot-password","/api/product/**","/api/products/**").permitAll()
+                .authorizeRequests().antMatchers("/api/auth/**","/api/verify-user/**","/api/reset-password","/api/forgot-password","/api/product/**","/api/products/**","/api/payment/charge").permitAll()
                 .antMatchers("/api/auth/add-user").hasAnyRole("ADMIN","MODERATOR","USER","MASTER").antMatchers("/api/product/add").hasAnyRole("ADMIN","MODERATOR").antMatchers("/upload","/files","/files/{id}").permitAll()
                 .antMatchers("/api/cart/**").hasAnyRole("USER","MODERATOR","MASTER","ADMIN")
                 .antMatchers("/api//product/update").hasAnyRole("ADMIN","MODERATOR")
