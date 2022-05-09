@@ -25,4 +25,11 @@ public class CartProduct {
 
     @Column(name="total")
     private Double total;
+
+
+    private boolean outOfStock;
+
+    public void outStock(Integer quantity){
+        this.outOfStock = this.product.getQty().intValue() > quantity;
+    }
 }

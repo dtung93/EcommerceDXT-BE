@@ -8,7 +8,7 @@ import tech.getarrays.apimanager.model.Cart;
 
 public interface CartRepo extends CrudRepository<Cart,Long>, JpaRepository<Cart,Long>, PagingAndSortingRepository<Cart,Long> {
 
-    @Query(nativeQuery = true,value="select * from cart c where c.username=:username")
+    @Query(nativeQuery = true,value="select * from cart c where c.username=:username and c.status=0")
     public Cart getCartByUser(String username);
 
 

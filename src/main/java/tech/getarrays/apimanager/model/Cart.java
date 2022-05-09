@@ -47,6 +47,7 @@ public class Cart implements Serializable {
  }
 
  public void removeCartProduct(CartProduct cp){
+
   this.items.remove(cp);
  }
 
