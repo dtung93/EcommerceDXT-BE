@@ -2,17 +2,14 @@ package tech.getarrays.apimanager.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.*;
 
 @Entity
+@Table(name="file_db")
 public class FileDB {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    @GeneratedValue
+    private Long id;
     private String name;
     private String type;
     @Lob
@@ -24,7 +21,7 @@ public class FileDB {
         this.type = type;
         this.data = data;
     }
-    public String getId() {
+    public Long getId() {
         return id;
     }
     public String getName() {

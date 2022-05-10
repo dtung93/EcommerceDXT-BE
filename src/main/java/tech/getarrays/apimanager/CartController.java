@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import tech.getarrays.apimanager.model.HandleCart;
 import tech.getarrays.apimanager.model.HandleProduct;
 import tech.getarrays.apimanager.model.Cart;
+import tech.getarrays.apimanager.model.Product;
+import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.service.CartService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -54,6 +58,5 @@ public class CartController {
         String username= SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(cartService.setProductQuantity(username, handleProduct.getId(), handleProduct.getQuantity()),HttpStatus.OK);
     }
-
 
 }

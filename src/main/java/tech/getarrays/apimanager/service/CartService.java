@@ -75,9 +75,6 @@ public class CartService {
         return updatedCart;
     }
 
-    public void getCartProducts(List id) {
-        productRepo.getProductsByListId(id);
-    }
 
     public void removeCartProduct(CartProduct cardProduct) {
         cartProductRepo.deleteCartProduct(cardProduct.getId());
@@ -179,10 +176,19 @@ public class CartService {
         return cart.getItems().stream().filter(cp -> cp.getProduct().getId().equals(id)).findFirst().orElse(null);
     }
 
-    public void updateProducts(String username) {
+    @Transactional
+    public void updateProductStock(String username) {
         Cart cart=this.getCartByUsername(username);
         cart.setStatus(true);
+        cartRepo.save(cart);
+        cart.getItems().forEach(cartProduct -> {
+            Integer quantity=cartProduct.getQuantity();
+           Long productId=cartProduct.getProduct().getId();
+           Product product=productRepo.lockFindById(productId);
+           product.updateQuantity(quantity);
+           productRepo.save(product);
+        }
+        );
 
-        ;
     }
 }

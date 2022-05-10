@@ -31,7 +31,7 @@ public class Cart implements Serializable {
 
  @OneToMany(cascade = CascadeType.ALL,fetch =FetchType.LAZY)
  @JoinColumn(name="cart_id",referencedColumnName = "id")
- private Set<CartProduct> items;
+ private Set<CartProduct> items=new HashSet<>();
 
  @Column(name="totalItems")
  private Integer totalItems=0;

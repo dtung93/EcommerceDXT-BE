@@ -103,17 +103,8 @@ public class Product implements Serializable {
         this.productcode = productcode;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Product{" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-//                ", category='" + category + '\'' +
-//                ", description='" + description + '\'' +
-//                ", img='" + img + '\'' +
-//                ", qty=" + qty +
-//                ", price=" + price +
-//                ", productcode='" + productcode + '\'' +
-//                '}';
-//    }
+    public void updateQuantity(Integer quantity) {
+        this.qty=this.qty.intValue()- quantity;
+    }
+
 }

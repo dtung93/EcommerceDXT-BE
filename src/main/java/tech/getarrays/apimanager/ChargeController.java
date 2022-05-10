@@ -31,7 +31,9 @@ public class ChargeController {
     private StripeService stripeService;
 
     @PostMapping("/charge")
-    public ResponseEntity<ChargeResponse> chargePayment(@RequestBody ChargeRequest chargeRequest) throws APIConnectionException, APIException, AuthenticationException, InvalidRequestException, CardException {
+    public ResponseEntity<ChargeResponse> chargePayment(@RequestBody ChargeRequest chargeRequest) throws Exception {
+        String username= SecurityContextHolder.getContext().getAuthentication().getName();
+        cartService.updateProductStock(username);
         chargeRequest.setDescription("TEST");
         chargeRequest.setCurrency(ChargeRequest.Currency.USD);
         chargeRequest.setStripeToken(chargeRequest.getStripeToken());
@@ -43,14 +45,12 @@ public class ChargeController {
         chargeResponse.setStatus(charge.getStatus());
         chargeResponse.setUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         chargeResponse.setTransactionId(charge.getBalanceTransaction());
-        String username= SecurityContextHolder.getContext().getAuthentication().getName();
-        cartService.updateProducts(username);
         return new ResponseEntity<ChargeResponse>(chargeResponse,HttpStatus.OK);
     }
 
-//    @ExceptionHandler(StripeException.class)
-//    public String handleStripeError(Model model,StripeException stripeException){
-//        model.addAttribute("Error",stripeException.getMessage());
-//        return "result";
-//    }
+    @ExceptionHandler(StripeException.class)
+    public String handleStripeError(Model model,StripeException stripeException){
+        model.addAttribute("Error",stripeException.getMessage());
+        return "result";
+    }
 }

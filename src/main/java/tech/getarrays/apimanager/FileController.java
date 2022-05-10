@@ -38,7 +38,7 @@ public class FileController {
             String fileDownloadUri = ServletUriComponentsBuilder
                     .fromCurrentContextPath()
                     .path("/files/")
-                    .path(dbFile.getId())
+                    .path(dbFile.getId().toString())
                     .toUriString();
             return new ResponseFile(
                     dbFile.getName(),
