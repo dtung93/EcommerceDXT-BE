@@ -1,4 +1,4 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -81,7 +81,19 @@ public class UserService {
    public Page<User> searchUser(String usernameoremail, Pageable paging){
         return (Page<User>)userRepo.searchUser(usernameoremail,paging);
    }
-    public User updateUser(User user){
+    public boolean existByUsername(String username){
+        return userRepo.existsByUsername(username);
+    }
+    public boolean existByEmai(String email){
+        return userRepo.existsByEmail(email);
+    }
+    public boolean existByPhone(String phone){
+        return userRepo.existsByPhone(phone);
+    }
+
+
+
+    public User updateUser(User user) throws Exception{
        return userRepo.save(user);
     }
 

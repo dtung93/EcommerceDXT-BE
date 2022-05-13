@@ -1,18 +1,15 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.controller;
 
 import com.stripe.exception.*;
 import com.stripe.model.Charge;
-import com.stripe.net.RequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import tech.getarrays.apimanager.model.Cart;
-import tech.getarrays.apimanager.model.ChargeRequest;
-import tech.getarrays.apimanager.model.ChargeResponse;
+import tech.getarrays.apimanager.payload.ChargeRequest;
+import tech.getarrays.apimanager.payload.ChargeResponse;
 import tech.getarrays.apimanager.service.CartService;
 import tech.getarrays.apimanager.service.ProductService;
 import tech.getarrays.apimanager.service.StripeService;

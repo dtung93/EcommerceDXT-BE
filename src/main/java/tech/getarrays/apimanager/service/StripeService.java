@@ -3,10 +3,9 @@ package tech.getarrays.apimanager.service;
 import com.stripe.Stripe;
 import com.stripe.exception.*;
 import com.stripe.model.Charge;
-import com.stripe.net.RequestOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import tech.getarrays.apimanager.model.ChargeRequest;
+import tech.getarrays.apimanager.payload.ChargeRequest;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;

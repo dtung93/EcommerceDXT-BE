@@ -37,6 +37,7 @@ int changePassword(String username, String newPassword);
 
    @Query(nativeQuery = true, value="SELECT * FROM users u where u.reset_password_token=:token")
    public User findByResetPasswordToken(@Param("token") String token);
+
    @Query(nativeQuery = true, value="SELECT * FROM users u where u.username like %:usernameoremail% or u.email like %:usernameoremail%")
    Page<User> searchUser(String usernameoremail, Pageable pageable);
 

@@ -1,4 +1,4 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,8 +44,8 @@ public class OrderController {
     @GetMapping("/my-order")
     public List<Order> getOrderByCartId(){
         String username= SecurityContextHolder.getContext().getAuthentication().getName();
-        var result =  orderService.getOrdersByUsername(username);
-        return result;
+        var orders =  orderService.getOrdersByUsername(username);
+        return orders;
     }
 
 

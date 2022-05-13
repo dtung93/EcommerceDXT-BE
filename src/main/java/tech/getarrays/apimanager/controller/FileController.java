@@ -1,4 +1,4 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +20,7 @@ public class FileController {
     @Autowired
     private FileStorageService storageService;
     @PostMapping("/upload")
-    public ResponseEntity<MessageResponse> uploadFile(@RequestParam("avatar") MultipartFile multiPartFile) {
+    public ResponseEntity<MessageResponse> uploadFile( MultipartFile multiPartFile) {
         String message = "";
         try {
             storageService.store(multiPartFile);

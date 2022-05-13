@@ -1,8 +1,7 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.controller;
 
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -11,9 +10,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import tech.getarrays.apimanager.service.RefreshTokenService;
 import tech.getarrays.apimanager.exception.TokenRefreshException;
 import tech.getarrays.apimanager.jwt.JwtUtils;
 import tech.getarrays.apimanager.model.*;
@@ -21,25 +19,24 @@ import tech.getarrays.apimanager.payload.*;
 import tech.getarrays.apimanager.repo.RoleRepo;
 import tech.getarrays.apimanager.repo.UserRepo;
 import tech.getarrays.apimanager.service.CartService;
-import tech.getarrays.apimanager.service.FileUpLoadService;
+import tech.getarrays.apimanager.service.UserService;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.apache.tomcat.jni.SSL.setPassword;
-
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    @Autowired
+    UserService userService;
     @Autowired
     CartService cartService;
     @Autowired
@@ -56,20 +53,21 @@ public class AuthController {
     RefreshTokenService refreshTokenService;
     @Autowired
     RoleRepo roleRepo;
+
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,String siteUrl) throws MessagingException, UnsupportedEncodingException {
-        if (userRepo.existsByUsername(signUpRequest.getUsername())) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, String siteUrl) throws MessagingException, UnsupportedEncodingException {
+        if (userService.existByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("This username is already taken!"));
         }
-        if (userRepo.existsByEmail(signUpRequest.getEmail())) {
+        if (userService.existByEmai(signUpRequest.getEmail())){
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("This email is already taken!"));
 
         }
-        if(userRepo.existsByPhone(signUpRequest.getPhone())){
+        if (userService.existByPhone(signUpRequest.getPhone())){
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Phone numbers already in use!"));
@@ -121,14 +119,15 @@ public class AuthController {
         user.setVerificationCode(RandomString.make(40));
         user.setEnabled(false);
         userRepo.save(user);
-        siteUrl="http://localhost:4200/verified-account";
+        siteUrl = "http://localhost:4200/verified-account";
 //       String uploadDir="user-photos/" + savedUser.getId();
 //      FileUpLoadService.saveFile(uploadDir,fileName,multipartFile);
-        sendVerificationEmail(user, siteUrl,user.getVerificationCode());
+        sendVerificationEmail(user, siteUrl, user.getVerificationCode());
         return ResponseEntity.ok(new MessageResponse("Your new account is created!"));
     }
+
     @PostMapping("/add-user")
-    public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signUpRequest,String siteUrl) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<?> addUser(@RequestBody SignupRequest signUpRequest) throws MessagingException, UnsupportedEncodingException {
         if (userRepo.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
@@ -140,7 +139,7 @@ public class AuthController {
                     .body(new MessageResponse("This email is already taken!"));
 
         }
-        if(userRepo.existsByPhone(signUpRequest.getPhone())){
+        if (userRepo.existsByPhone(signUpRequest.getPhone())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Phone numbers already in use!"));
@@ -149,8 +148,6 @@ public class AuthController {
         user.setUsername(signUpRequest.getUsername());
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
-        user.setAddress(signUpRequest.getAddress());
-        user.setPhone(signUpRequest.getPhone());
 //        String fileName= StringUtils.cleanPath(multipartFile.getOriginalFilename());
 //        user.setAvatar(fileName);
         user.setAvatar(signUpRequest.getAvatar());
@@ -186,49 +183,54 @@ public class AuthController {
             });
         }
         user.setRoles(roles);
-        user.setEnabled(true);
+        user.setEnabled(false);
+        user.setVerificationCode(RandomString.make(40));
         userRepo.save(user);
+        String siteUrl = "http://localhost:4200/verified-account";
+        sendVerificationEmail(user,siteUrl,user.getVerificationCode());
         return ResponseEntity.ok(new MessageResponse("New account succesfully added"));
     }
 
-  public void sendVerificationEmail(User user, String siteUrl,String token) throws MessagingException,UnsupportedEncodingException{
-      String toAddress = user.getEmail();
-      String fromAddress = "dxt@global.com";
-      String senderName = "DXT";
-      String subject = "Please verify your registration";
-      String content = "Dear [[name]],<br>"
-              + "Your new account was created with this email. Please click the link below to confirm your registration:<br>"
-              + "<h5><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h5>"
-              + "Thank you,<br>"
-              + "DXT Global";
 
-      MimeMessage message = mailSender.createMimeMessage();
-      MimeMessageHelper helper = new MimeMessageHelper(message);
+    public void sendVerificationEmail(User user, String siteUrl, String token) throws MessagingException, UnsupportedEncodingException {
+        String toAddress = user.getEmail();
+        String fromAddress = "dxt@global.com";
+        String senderName = "DXT";
+        String subject = "Please verify your registration";
+        String content = "Dear [[name]],<br>"
+                + "Your new account was created with this email. Please click the link below to confirm your registration:<br>"
+                + "<h5><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h5>"
+                + "Thank you,<br>"
+                + "DXT Global";
 
-      helper.setFrom(fromAddress, senderName);
-      helper.setTo(toAddress);
-      helper.setSubject(subject);
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
 
-      content = content.replace("[[name]]", user.getUsername());
-      String verifyURL = siteUrl+"/?verify-code="+user.getVerificationCode();
+        helper.setFrom(fromAddress, senderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
 
-      content = content.replace("[[URL]]", verifyURL);
+        content = content.replace("[[name]]", user.getUsername());
+        String verifyURL = siteUrl + "/?verify-code=" + user.getVerificationCode();
 
-      helper.setText(content, true);
+        content = content.replace("[[URL]]", verifyURL);
 
-      mailSender.send(message);
-  }
+        helper.setText(content, true);
+
+        mailSender.send(message);
+    }
 
     private String getSiteURL(HttpServletRequest request) {
         String siteURL = request.getRequestURL().toString();
         return siteURL.replace(request.getServletPath(), "");
     }
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        System.out.println(loginRequest.getUsername()+" "+ loginRequest.getPassword());
+        System.out.println(loginRequest.getUsername() + " " + loginRequest.getPassword());
         UsernamePasswordAuthenticationToken request = new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), loginRequest.getPassword());
-     Authentication authentication = authenticationManager.authenticate(request);
+        Authentication authentication = authenticationManager.authenticate(request);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         String jwt = jwtUtils.generateJwtToken(userDetails);
@@ -236,7 +238,7 @@ public class AuthController {
                 .collect(Collectors.toList());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
-        Cart cart=cartService.getCartByUsername(userDetails.getUsername());
+        Cart cart = cartService.getCartByUsername(userDetails.getUsername());
 
         userDetails.setCart(cart);
 
@@ -252,8 +254,9 @@ public class AuthController {
                 roles,
                 userDetails.getEnabled(),
                 userDetails.getCart()
- ));
+        ));
     }
+
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();
