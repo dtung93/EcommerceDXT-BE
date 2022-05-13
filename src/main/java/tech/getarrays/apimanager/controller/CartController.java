@@ -1,4 +1,4 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -6,14 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import tech.getarrays.apimanager.model.HandleCart;
-import tech.getarrays.apimanager.model.HandleProduct;
+import tech.getarrays.apimanager.payload.HandleProduct;
 import tech.getarrays.apimanager.model.Cart;
-import tech.getarrays.apimanager.model.Product;
-import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.service.CartService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -21,6 +16,8 @@ import java.util.List;
 public class CartController {
     @Autowired
     private CartService cartService;
+
+
     @PostMapping("/add-item")
     public ResponseEntity<Cart> addToCart(@RequestBody HandleProduct handleProduct)  {
         String username= SecurityContextHolder.getContext().getAuthentication().getName();

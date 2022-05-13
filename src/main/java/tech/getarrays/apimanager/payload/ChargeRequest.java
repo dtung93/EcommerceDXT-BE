@@ -1,4 +1,4 @@
-package tech.getarrays.apimanager.model;
+package tech.getarrays.apimanager.payload;
 
 import lombok.Data;
 

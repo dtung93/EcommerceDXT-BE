@@ -1,4 +1,4 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

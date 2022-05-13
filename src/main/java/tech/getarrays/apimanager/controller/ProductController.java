@@ -1,4 +1,4 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.controller;
 
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;

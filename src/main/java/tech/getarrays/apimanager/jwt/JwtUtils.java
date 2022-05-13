@@ -1,12 +1,11 @@
 package tech.getarrays.apimanager.jwt;
 
 import io.jsonwebtoken.*;
-import org.springframework.security.core.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import tech.getarrays.apimanager.MyUserDetails;
+import tech.getarrays.apimanager.controller.MyUserDetails;
 import java.util.Date;
 @Component
 public class JwtUtils {

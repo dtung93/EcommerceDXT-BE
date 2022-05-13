@@ -1,6 +1,8 @@
-package tech.getarrays.apimanager;
+package tech.getarrays.apimanager.controller;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import tech.getarrays.apimanager.payload.ResponseData;
+import tech.getarrays.apimanager.payload.ResponseError;
 import tech.getarrays.apimanager.model.User;
-import tech.getarrays.apimanager.model.UserChangePassword;
+import tech.getarrays.apimanager.payload.UserChangePassword;
 import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.repo.UserRepo;
 import tech.getarrays.apimanager.service.UserService;
@@ -33,13 +37,15 @@ private UserService userService;
     @Autowired
 private UserRepo userRepo;
 
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @GetMapping("/verify-user/{verifyCode}")
-    public MessageResponse getVerifyCode(@PathVariable("verifyCode") String verifyCode){
+    public ResponseEntity<MessageResponse> getVerifyCode(@PathVariable("verifyCode") String verifyCode){
         if (userService.verifyUser(verifyCode)){
-           return new MessageResponse("Account successfully verified!");
+           return new ResponseEntity<>(new MessageResponse("SUCCESS"),HttpStatus.OK);
         }
         else{
-            return new MessageResponse("Invalid token . User could n{ot be found");
+            return new ResponseEntity<>(new MessageResponse("Invalid or expired token"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @PutMapping("user/change-password")
@@ -52,7 +58,7 @@ private UserRepo userRepo;
             return new ResponseEntity<>(updatedUser,HttpStatus.OK);
         }
        else{
-           return new ResponseEntity<>("You have entered a wrong password",HttpStatus.OK);
+           return new ResponseEntity<>("You have entered a wrong password",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -64,10 +70,21 @@ private UserRepo userRepo;
     }
 
     @PutMapping("/user/update")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-
-        User updateUser = userService.updateUser(user);
-        return new ResponseEntity<>(updateUser, HttpStatus.OK);
+    public ResponseEntity<?> updateUser(@RequestBody User user ){
+        ResponseData responseData=new ResponseData();
+        try {
+            User updateUser = userService.updateUser(user);
+            responseData.setStatusCode(HttpStatus.OK.value());
+            responseData.setMapData("user", updateUser);
+        } catch (Exception e) {
+            ResponseError error=new ResponseError();
+            error.setStatusCode(HttpStatus.BAD_REQUEST.value());
+            error.setErrorCode(3000);
+            error.setErrorMessage(e.getMessage());
+            logger.error(e.getMessage(),e);
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
     @PutMapping("role/update")
     public ResponseEntity<?> updateRole(@RequestBody User user) {
