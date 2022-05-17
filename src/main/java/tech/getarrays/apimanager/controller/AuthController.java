@@ -139,11 +139,6 @@ public class AuthController {
                     .body(new MessageResponse("This email is already taken!"));
 
         }
-        if (userRepo.existsByPhone(signUpRequest.getPhone())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Phone numbers already in use!"));
-        }
         User user = new User();
         user.setUsername(signUpRequest.getUsername());
         user.setEmail(signUpRequest.getEmail());

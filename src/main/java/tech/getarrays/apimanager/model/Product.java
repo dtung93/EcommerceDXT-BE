@@ -24,12 +24,12 @@ public class Product implements Serializable {
     private String category;
     private String description;
     private String img;
-    private Number qty;
-    private Number price;
+    private Integer qty;
+    private Double price;
     @Column(nullable=false,updatable=false)
     private String productcode;
     public Product(){}
-    public Product(String name, String category, String description, String img, Number qty, Number price, String productcode) {
+    public Product(String name, String category, String description, String img, Integer qty, Double price, String productcode) {
         this.name = name;
         this.category = category;
         this.description = description;
@@ -79,7 +79,7 @@ public class Product implements Serializable {
         this.img = img;
     }
 
-    public Number getQty() {
+    public Integer getQty() {
         return qty;
     }
 
@@ -87,11 +87,11 @@ public class Product implements Serializable {
         this.qty = qty;
     }
 
-    public Number getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Number price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
