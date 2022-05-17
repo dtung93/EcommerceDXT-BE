@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import tech.getarrays.apimanager.jwt.AuthEntryPointJwt;
 import tech.getarrays.apimanager.jwt.AuthTokenFilter;
+import tech.getarrays.apimanager.model.Roles;
 import tech.getarrays.apimanager.service.UserDetailsServiceImpl;
 
 import javax.servlet.Filter;
@@ -69,8 +70,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint((AuthenticationEntryPoint) unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**","/api/verify-user/**","/api/reset-password","/api/forgot-password","/api/product/**","/api/products/**","/api/payment/charge","/api/order/**").permitAll()
-                .antMatchers("/api/auth/add-user").hasAnyRole("ADMIN","MODERATOR","USER","MASTER").antMatchers("/api/product/add").hasAnyRole("ADMIN","MODERATOR").antMatchers("/upload","/files","/files/{id}").permitAll()
+                .authorizeRequests()
+                .antMatchers("/api/auth/**","/api/verify-user/**","/api/reset-password","/api/forgot-password","/api/product/**","/api/products/**","/api/payment/charge").permitAll()
+                .antMatchers("/api/auth/add-user","/api/order/**").hasAnyRole("ADMIN","MODERATOR","USER","MASTER").antMatchers("/api/product/add").hasAnyRole("ADMIN","MODERATOR").antMatchers("/upload","/files","/files/{id}").permitAll()
                 .antMatchers("/api/cart/**").permitAll()
                 .antMatchers("/api/product/update").hasAnyRole("ADMIN","MODERATOR")
                 .antMatchers("/api/delete/**").hasAnyRole("ADMIN","MODERATOR","MASTER").

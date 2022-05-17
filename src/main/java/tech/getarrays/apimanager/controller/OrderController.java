@@ -30,7 +30,6 @@ public class OrderController {
     }
 
     @GetMapping("/all-orders")
-    @PreAuthorize("hasAnyRole('ADMIN','MASTER')")
     public List<Order> getAllOrders(){
         return  orderService.getAllOrders();
     }
