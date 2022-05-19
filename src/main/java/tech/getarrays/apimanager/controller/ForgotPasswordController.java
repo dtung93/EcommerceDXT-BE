@@ -58,7 +58,7 @@ public class ForgotPasswordController {
         String subject = "Here's the link to reset your password";
 
         String content = "<p>Hello,</p>"
-                +"<span>Confirmation code:" + token+ "</span>"
+                +"<span>Confirmation code  " + token+ "</span>"
                 + "<p>Hello,we received a request to change your account password at DXT.</p>"
                 + "<p>Below is the link to update your password:</p>"
                 + "<p><a href=\"" + link + "\">Change my password</a></p>"
