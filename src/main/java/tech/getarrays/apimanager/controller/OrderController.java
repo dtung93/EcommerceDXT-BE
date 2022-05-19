@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tech.getarrays.apimanager.model.Order;
+import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.service.CartService;
 import tech.getarrays.apimanager.service.OrderService;
 
@@ -30,9 +31,17 @@ public class OrderController {
     }
 
     @GetMapping("/all-orders")
-    public List<Order> getAllOrders(){
-        return  orderService.getAllOrders();
+    public ResponseEntity<?>getAllOrders() throws Exception {
+    try{    List<Order> order=orderService.getAllOrders();
+        return new ResponseEntity<>(order,HttpStatus.OK);
     }
+    catch (Exception e){
+        return new ResponseEntity<>(new MessageResponse("No users found"),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    }
+//    public List<Order> getAllOrders(){
+//        return  orderService.getAllOrders();
+//    }
 
     @GetMapping("/details/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable("id") Long id){
