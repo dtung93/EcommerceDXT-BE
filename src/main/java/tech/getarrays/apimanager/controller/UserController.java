@@ -96,23 +96,23 @@ private UserRepo userRepo;
     @GetMapping("/admin/users")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MASTER')")
        public ResponseEntity<Map<String,Object>> getAllUsers(
-            @RequestParam(required = false) String usernameoremail,
+            @RequestParam(required = false) String username,
             @RequestParam(defaultValue="0") int page,
-            @RequestParam(defaultValue = "8") int size
+            @RequestParam(defaultValue = "6") int size
     ){
         try{
             List<User> users;
             Pageable paging= (Pageable) PageRequest.of(page,size);
             Page<User> pageProds = null;
-            if(usernameoremail==null)
+            if(username==null)
             { pageProds = (Page<User>) userService.getUsers(paging);}
             else
-            {pageProds=userService.searchUser(usernameoremail,paging);}
+            {pageProds=userService.searchUser(username,paging);}
             users= pageProds.getContent();
             Map<String,Object> response=new HashMap<>();
             response.put("users",users);
             response.put("currentPage",pageProds.getNumber());
-            response.put("totalItems",pageProds.getTotalElements());
+            response.put("totalUsers",pageProds.getTotalElements());
             response.put("totalPages",pageProds.getTotalPages());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
