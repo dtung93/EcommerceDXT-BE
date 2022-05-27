@@ -1,7 +1,10 @@
 package tech.getarrays.apimanager.controller;
 
 import net.bytebuddy.utility.RandomString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -11,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import tech.getarrays.apimanager.exception.ResponseError;
+import tech.getarrays.apimanager.exception.StatusCode;
 import tech.getarrays.apimanager.service.RefreshTokenService;
 import tech.getarrays.apimanager.exception.TokenRefreshException;
 import tech.getarrays.apimanager.jwt.JwtUtils;
@@ -53,26 +58,41 @@ public class AuthController {
     RefreshTokenService refreshTokenService;
     @Autowired
     RoleRepo roleRepo;
-
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, String siteUrl) throws MessagingException, UnsupportedEncodingException {
-        if (userService.existByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("This username is already taken!"));
-        }
-        if (userService.existByEmai(signUpRequest.getEmail())){
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("This email is already taken!"));
+  try {
+      if (userService.existByUsername(signUpRequest.getUsername())) {
+          ResponseError responseError = new ResponseError();
+          responseError.setErrorMessage("This username is already taken!");
+          responseError.setStatusCode(StatusCode.BadRequest);
+          responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+          return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
+      }
+      if (userService.existByEmai(signUpRequest.getEmail())) {
+          ResponseError responseError = new ResponseError();
+          responseError.setErrorMessage("This email is already taken!");
+          responseError.setStatusCode(StatusCode.BadRequest);
+          responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+          return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
 
-        }
-        if (userService.existByPhone(signUpRequest.getPhone())){
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Phone numbers already in use!"));
-        }
-
+      }
+      if (userService.existByPhone(signUpRequest.getPhone())) {
+          ResponseError responseError = new ResponseError();
+          responseError.setErrorMessage("This phone numbers already taken!");
+          responseError.setStatusCode(StatusCode.BadRequest);
+          responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+          return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
+      }
+  }
+  catch (Exception e){
+      ResponseError responseError = new ResponseError();
+      responseError.setErrorMessage(e.getMessage());
+      responseError.setStatusCode(StatusCode.BadRequest);
+      responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+      logger.error(e.getMessage(),e);
+      return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
+  }
 
         // Create new user's account
         User user = new User();
@@ -123,21 +143,38 @@ public class AuthController {
 //       String uploadDir="user-photos/" + savedUser.getId();
 //      FileUpLoadService.saveFile(uploadDir,fileName,multipartFile);
         sendVerificationEmail(user, siteUrl, user.getVerificationCode());
-        return ResponseEntity.ok(new MessageResponse("Your new account is created!"));
+        ResponseData responseData = new ResponseData();
+        responseData.setStatusCode(StatusCode.Created);
+        responseData.setMapData("user", user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/add-user")
     public ResponseEntity<?> addUser(@RequestBody SignupRequest signUpRequest) throws MessagingException, UnsupportedEncodingException {
-        if (userRepo.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("This username is already taken!"));
-        }
-        if (userRepo.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("This email is already taken!"));
+        try {
+            if (userRepo.existsByUsername(signUpRequest.getUsername())) {
+                ResponseError responseError = new ResponseError();
+                responseError.setErrorMessage("This username is already taken!");
+                responseError.setStatusCode(StatusCode.BadRequest);
+                responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+                return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
+            }
+            if (userRepo.existsByEmail(signUpRequest.getEmail())) {
+                ResponseError responseError = new ResponseError();
+                responseError.setErrorMessage("This email is already taken!");
+                responseError.setStatusCode(StatusCode.BadRequest);
+                responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+                return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
 
+            }
+
+        } catch (Exception e) {
+            ResponseError responseError = new ResponseError();
+            responseError.setErrorMessage(e.getMessage());
+            responseError.setStatusCode(StatusCode.BadRequest);
+            responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+            logger.error(e.getMessage(),e);
+            return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
         }
         User user = new User();
         user.setUsername(signUpRequest.getUsername());
@@ -182,8 +219,11 @@ public class AuthController {
         user.setVerificationCode(RandomString.make(40));
         userRepo.save(user);
         String siteUrl = "http://localhost:4200/verified-account";
-        sendVerificationEmail(user,siteUrl,user.getVerificationCode());
-        return ResponseEntity.ok(new MessageResponse("New account succesfully added"));
+        sendVerificationEmail(user, siteUrl, user.getVerificationCode());
+        ResponseData responseData = new ResponseData();
+        responseData.setStatusCode(StatusCode.Created);
+        responseData.setMapData("user", user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
 

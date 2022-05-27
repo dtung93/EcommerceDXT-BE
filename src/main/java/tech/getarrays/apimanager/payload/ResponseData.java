@@ -13,6 +13,8 @@ public class ResponseData {
     private Map data=new HashMap();
 
     public void setMapData(String key, Object updateData) {
-        this.data.put(key,updateData);
+
+        this.data.put(key,updateData
+        );
     }
 }

@@ -32,7 +32,9 @@ public interface ProductRepo extends CrudRepository<Product,Long>,JpaRepository<
     Page<Product> findAllByOrderByPriceAsc(Pageable pageable);
     Page<Product> findByNameContaining(String name, Pageable pageable);
     Page<Product> findByCategoryContaining(String category, Pageable pageable);
-    Page<Product> findProductByNameContainingAndCategoryContaining(String name,
+    Page<Product> findByNameContainingAndCategoryContaining(String name,
                                                                   String category,
                                                                   Pageable pageable);
+    Page<Product> findProductByNameContainingAndCategoryContainingOrderByPriceAsc(String name, String category,Pageable pageable);
+    Page<Product> findProductByNameContainingAndCategoryContainingOrderByPriceDesc(String name, String category,Pageable pageable);
 }
