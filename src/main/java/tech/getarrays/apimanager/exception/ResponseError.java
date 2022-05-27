@@ -1,4 +1,4 @@
-package tech.getarrays.apimanager.payload;
+package tech.getarrays.apimanager.exception;
 
 
 import lombok.Getter;

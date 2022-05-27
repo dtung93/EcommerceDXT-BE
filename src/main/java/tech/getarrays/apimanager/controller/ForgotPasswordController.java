@@ -1,6 +1,8 @@
 package tech.getarrays.apimanager.controller;
 
 import net.bytebuddy.utility.RandomString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -10,10 +12,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import tech.getarrays.apimanager.exception.ResponseError;
+import tech.getarrays.apimanager.exception.StatusCode;
 import tech.getarrays.apimanager.exception.UserNotFoundException;
 import tech.getarrays.apimanager.model.User;
 import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.payload.ResetPasswordRequest;
+import tech.getarrays.apimanager.payload.ResponseData;
 import tech.getarrays.apimanager.service.UserService;
 
 import javax.mail.MessagingException;
@@ -33,9 +38,9 @@ public class ForgotPasswordController {
     private UserService userService;
 
 
-
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @PostMapping("/forgot-password")
-    public ResponseEntity<MessageResponse> processForgotPassword(@RequestBody String email, HttpServletRequest request) {
+    public ResponseEntity<?> processForgotPassword(@RequestBody String email, HttpServletRequest request) {
         String token = RandomString.make(30);
         try {
             userService.updateResetPasswordToken(token, email);
@@ -43,7 +48,12 @@ public class ForgotPasswordController {
             sendEmail(email,resetPasswordLink,token);
            return new ResponseEntity<>(new MessageResponse(token),HttpStatus.OK);
         } catch (UserNotFoundException | UnsupportedEncodingException | MessagingException ex) {
-            return new ResponseEntity<>(new MessageResponse("NO USER FOUND"),HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error(ex.getMessage(),ex);
+            ResponseError responseError = new ResponseError();
+            responseError.setErrorMessage("No users found");
+            responseError.setStatusCode(StatusCode.BadRequest);
+            responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+            return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -74,15 +84,32 @@ public class ForgotPasswordController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<MessageResponse> processResetPassword(@RequestBody ResetPasswordRequest data) {
+    public ResponseEntity<?> processResetPassword(@RequestBody ResetPasswordRequest data) {
         String token=data.getToken();
         String password=data.getPassword();
         User user = userService.getByResetPasswordToken(token);
-        if (user== null) {
-       return new ResponseEntity<>(new MessageResponse("INVALID TOKEN"),HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-            userService.updatePassword(user, password);
-           return new ResponseEntity<>(new MessageResponse("SUCCESS"),HttpStatus.OK);
-        }
+      try {
+          if (user == null) {
+              ResponseError responseError = new ResponseError();
+              responseError.setErrorMessage("Invalid or expired token");
+              responseError.setStatusCode(StatusCode.BadRequest);
+              responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+              return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
+          } else {
+              userService.updatePassword(user, password);
+              ResponseData responseData = new ResponseData();
+              responseData.setStatusCode(StatusCode.SuccessfulRequest);
+              responseData.setMapData("response", 1);
+              return new ResponseEntity<>(responseData, HttpStatus.OK);
+          }
+      }
+      catch (Exception e){
+          ResponseError responseError = new ResponseError();
+          responseError.setErrorMessage(e.getMessage());
+          responseError.setStatusCode(StatusCode.BadRequest);
+          responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+          logger.error(e.getMessage(),e);
+          return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
+      }
     }
 }

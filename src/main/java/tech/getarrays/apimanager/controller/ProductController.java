@@ -1,11 +1,18 @@
 package tech.getarrays.apimanager.controller;
 
+import org.apache.coyote.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.getarrays.apimanager.model.Cart;
+import tech.getarrays.apimanager.exception.StatusCode;
 import tech.getarrays.apimanager.model.Product;
+import tech.getarrays.apimanager.payload.Products;
+import tech.getarrays.apimanager.exception.ResponseError;
+import tech.getarrays.apimanager.payload.ResponseData;
 import tech.getarrays.apimanager.service.ProductService;
 import tech.getarrays.apimanager.service.UserService;
 
@@ -21,43 +28,42 @@ import java.util.Map;
 public class ProductController {
     private ProductService productService;
     private UserService userService;
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public ProductController(ProductService productService, UserService userService) {
         this.productService = productService;
         this.userService = userService;
     }
-
-    @GetMapping("/products")
-    public ResponseEntity<Map<String, Object>> getAllProducts(
-
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String name,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size
-    ) {
+    @PostMapping("/products")
+    public ResponseEntity<?> getProducts(@RequestBody Products products){
+        ResponseData responseData=new ResponseData();
         try {
-            List<Product> products;
-            Pageable paging = PageRequest.of(page, size);
+            List<Product> listproducts;
+            Pageable paging = PageRequest.of(
+                    (products.getPage()!=null)?products.getPage():0,
+                    (products.getPageSize()!=null)? products.getPageSize() : 8);
             Page<Product> pageProds;
-            if (name == null && category == null)
-                pageProds = productService.findAllProducts(paging);
-            else if (name == null && category != null)
-                pageProds = productService.findByCategory(category, paging);
-            else if (name != null && category == null)
-                pageProds = productService.findByName(name, paging);
-            else
-                pageProds = productService.findByNameAndCategory(name, category, paging);
-            products = pageProds.getContent();
+            pageProds = productService.getProducts(products, paging);
+            listproducts = pageProds.getContent();
             Map<String, Object> response = new HashMap<>();
-            response.put("products", products);
+            response.put("products", listproducts);
             response.put("currentPage", pageProds.getNumber());
             response.put("totalItems", pageProds.getTotalElements());
             response.put("totalPages", pageProds.getTotalPages());
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            responseData.setStatusCode(StatusCode.SuccessfulRequest);
+            responseData.setMapData("response",response);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            ResponseError error=new ResponseError();
+            error.setErrorCode(StatusCode.InternalError);
+            error.setErrorMessage(e.getMessage());
+            error.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.ordinal());
+            logger.error(e.getMessage(),e);
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
+
+
 
     @GetMapping("/product/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) {
@@ -79,36 +85,19 @@ public class ProductController {
 
     @DeleteMapping("/delete/{id}")
    public ResponseEntity<?> deleteProduct(@PathVariable("id")Long id){
-       productService.deleteProduct(id);
-       return new ResponseEntity<>(HttpStatus.OK);
+        ResponseData responseData=new ResponseData();
+      try {
+          productService.deleteProduct(id);
+          responseData.setStatusCode(StatusCode.SuccessfulRequest);
+          responseData.setMapData("response",1);
+      }
+      catch(Exception e){
+          ResponseError responseError=new ResponseError();
+          responseError.setStatusCode(StatusCode.InternalError);
+          responseError.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.ordinal());
+          logger.error(e.getMessage(),e);
+          responseError.setErrorMessage(e.getMessage());
+      }
+      return new ResponseEntity<>(responseData,HttpStatus.OK);
    }
-    @GetMapping("/products/sort-by-price")
-    public ResponseEntity<Map<String, Object>> sortProduct(
-            @RequestParam(required = false) String value,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size
-    ) {
-        try {
-            List<Product> products;
-            Pageable paging = PageRequest.of(page, size);
-            Page<Product> pageProds;
-            if (value.equals("ascending")) {
-                pageProds = productService.findAllSortedByAscendingPrice(paging);
-            } else if (value.equals("descending")) {
-                pageProds = productService.findAllSortedByDescendingPrice(paging);
-            } else {
-                pageProds = productService.findAllProducts(paging);
-            }
-            products = pageProds.getContent();
-            Map<String, Object> response = new HashMap<>();
-            response.put("products", products);
-            response.put("currentPage", pageProds.getNumber());
-            response.put("totalItems", pageProds.getTotalElements());
-            response.put("totalPages", pageProds.getTotalPages());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
 }
