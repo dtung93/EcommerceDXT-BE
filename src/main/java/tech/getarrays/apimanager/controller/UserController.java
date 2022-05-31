@@ -92,7 +92,7 @@ public class UserController {
         try{
             userService.changeUser(handleUser);
             responseData.setStatusCode(StatusCode.SuccessfulRequest);
-            responseData.setMapData("user",handleUser);
+            responseData.setMapData("data",handleUser);
         }
         catch(Exception e){
             ResponseError error=new ResponseError();
@@ -168,6 +168,7 @@ public class UserController {
             } else {
                 pageProds = userService.searchUser(username, paging);
             }
+
             users = pageProds.getContent();
             Map<String, Object> response = new HashMap<>();
             response.put("users", users);

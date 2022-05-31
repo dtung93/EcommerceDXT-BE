@@ -87,7 +87,7 @@ public class ProductService {
             else if (products.getSort().equals("descending"))
                 pageProds=this.findByNameAndCategoryPriceDescending(products.getProductName(), products.getCategory(), paging);
             else
-                pageProds=this.findAllProducts(paging);
+                pageProds=this.findByNameAndCategory(products.getProductName(),products.getCategory(),paging);
         }
         else if (products.getProductName() != null && products.getCategory() != null)
             pageProds = this.findByNameAndCategory(products.getProductName(), products.getCategory(), paging);
