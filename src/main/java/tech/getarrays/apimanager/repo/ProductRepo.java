@@ -18,6 +18,7 @@ import java.util.Optional;
 
 public interface ProductRepo extends CrudRepository<Product,Long>,JpaRepository<Product,Long>, JpaSpecificationExecutor<Product>, PagingAndSortingRepository<Product, Long> {
 
+    List<Product> findAll();
 
     @Query(nativeQuery = true,value="select * from product p where p.id in :id")
   List<Product> getProductsByListId(List id);
