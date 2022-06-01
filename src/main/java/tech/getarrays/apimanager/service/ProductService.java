@@ -12,6 +12,7 @@ import tech.getarrays.apimanager.payload.Products;
 import tech.getarrays.apimanager.repo.ProductRepo;
 import tech.getarrays.apimanager.model.Product;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -71,7 +72,9 @@ public class ProductService {
     public Page<Product> findByNameAndCategoryPriceDescending(String name, String category, Pageable paging) {
         return (Page<Product>) productRepo.findProductByNameContainingAndCategoryContainingOrderByPriceDesc(name, category, paging);
     }
-
+   public List<Product> getProducts(){
+        return productRepo.findAll();
+   }
     public Page<Product> getProducts(Products products, Pageable paging) {
         Page<Product> pageProds = null;
         if (products.getProductName() == null

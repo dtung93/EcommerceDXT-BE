@@ -34,6 +34,31 @@ public class ProductController {
         this.productService = productService;
         this.userService = userService;
     }
+    @GetMapping("/products")
+    public ResponseEntity<?>getProducts(){
+        ResponseData responseData=new ResponseData();
+        try{
+            List<Product> products= productService.getProducts();
+            responseData.setStatusCode(StatusCode.SuccessfulRequest);
+            responseData.setMapData("data",products);
+            return new ResponseEntity<>(responseData,HttpStatus.OK);
+        }
+        catch(Exception e){
+            ResponseError responseError=new ResponseError();
+            responseError.setStatusCode(StatusCode.InternalError);
+            responseError.setErrorCode(HttpStatus.BAD_REQUEST.ordinal());
+            responseError.setErrorMessage(e.getMessage());
+            logger.error(e.getMessage(),e);
+            return new ResponseEntity<>(responseError,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
+
+
+
+
+
     @PostMapping("/products")
     public ResponseEntity<?> getProducts(@RequestBody Products products){
         ResponseData responseData=new ResponseData();

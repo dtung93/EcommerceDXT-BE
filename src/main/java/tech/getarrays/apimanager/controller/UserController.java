@@ -105,45 +105,6 @@ public class UserController {
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
 
-//    public ResponseEntity<?> updateUser(@RequestBody UserDTO handleUser ){
-//        ResponseData responseData=new ResponseData();
-//        try {
-//            if(handleUser.getUser().getEmail()!=handleUser.getEmail() || handleUser.getUser().getPhone()!=handleUser.getPhone()){
-//                if(handleUser.getUser().getEmail()== handleUser.getEmail()&&handleUser.getUser().getPhone()!=handleUser.getPhone()){
-//                    if(userService.existByPhone(handleUser.getPhone())){
-//                        ResponseError error=new ResponseError();
-//                        error.setStatusCode(HttpStatus.BAD_REQUEST.value());
-//                        error.setErrorCode(StatusCode.BadRequest);
-//                        error.setErrorMessage("Phone numbers already exists");
-//                        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//                    }
-//                }
-//                else if(handleUser.getEmail()!=handleUser.getEmail()&&handleUser.getPhone()==handleUser.getPhone()){
-//                    if(userService.existByEmai(handleUser.getEmail())){
-//                        ResponseError error=new ResponseError();
-//                        error.setStatusCode(HttpStatus.BAD_REQUEST.value());
-//                        error.setErrorCode(StatusCode.BadRequest);
-//                        error.setErrorMessage("Email already exists");
-//                        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//                    }
-//                }
-//
-//            }else {
-//                UserDTO updateUser= new UserDTO();
-//                userService.changeUser(updateUser);
-//                responseData.setStatusCode(HttpStatus.OK.value());
-//                responseData.setMapData("user", updateUser);
-//            }
-//        } catch (Exception e) {
-//            ResponseError error=new ResponseError();
-//            error.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.ordinal());
-//            error.setErrorCode(StatusCode.InternalError);
-//            error.setErrorMessage(e.getMessage());
-//            logger.error(e.getMessage(),e);
-//            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return new ResponseEntity<>(responseData, HttpStatus.OK);
-//    }
 
     @PutMapping("role/update")
     public ResponseEntity<?> updateRole(@RequestBody User user) {
