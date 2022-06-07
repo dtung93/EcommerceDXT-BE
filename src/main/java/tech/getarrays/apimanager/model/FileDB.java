@@ -1,9 +1,12 @@
 package tech.getarrays.apimanager.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-
+@Getter
+@Setter
 @Entity
 @Table(name="file_db")
 public class FileDB {
