@@ -1,5 +1,6 @@
 package tech.getarrays.apimanager.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,8 +20,8 @@ public class FileStorageService {
         FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
         return fileDBRepository.save(FileDB);
     }
-    public FileDB getFile(String id) {
-        return fileDBRepository.findById(id).get();
+    public FileDB getFile(Long id) {
+        return fileDBRepository.findById(id);
     }
 
     public Stream<FileDB> getAllFiles() {

@@ -15,12 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tech.getarrays.apimanager.exception.StatusCode;
 import tech.getarrays.apimanager.model.UserDTO;
-import tech.getarrays.apimanager.payload.HandleUser;
-import tech.getarrays.apimanager.payload.ResponseData;
+import tech.getarrays.apimanager.payload.*;
 import tech.getarrays.apimanager.exception.ResponseError;
 import tech.getarrays.apimanager.model.User;
-import tech.getarrays.apimanager.payload.UserChangePassword;
-import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.repo.UserRepo;
 import tech.getarrays.apimanager.service.UserService;
 
@@ -113,39 +110,69 @@ public class UserController {
     }
 
 
-    @GetMapping("/admin/users")
+//    @GetMapping("/admin/users")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MASTER')")
+//    public ResponseEntity<?> getAllUsers(
+//            @RequestParam(required = false) String username,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size
+//    ) {
+//        try {
+//            List<User> users;
+//            Pageable paging = (Pageable) PageRequest.of(page, size);
+//            Page<User> pageProds = null;
+//            if (username == null) {
+//                pageProds = (Page<User>) userService.getUsers(paging);
+//            } else {
+//                pageProds = userService.searchUser(username, paging);
+//            }
+//
+//            users = pageProds.getContent();
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("users", users);
+//            response.put("currentPage", pageProds.getNumber());
+//            response.put("totalUsers", pageProds.getTotalElements());
+//            response.put("totalPages", pageProds.getTotalPages());
+//            return new ResponseEntity<>(response, HttpStatus.OK);
+//        } catch (Exception e) {
+//            ResponseError responseError = new ResponseError();
+//            responseError.setErrorMessage(e.getMessage());
+//            responseError.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.ordinal());
+//            responseError.setStatusCode(StatusCode.InternalError);
+//            logger.error(e.getMessage(), e);
+//            return new ResponseEntity<>(responseError, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+    @PostMapping("/admin/users")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MASTER')")
-    public ResponseEntity<?> getAllUsers(
-            @RequestParam(required = false) String username,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size
-    ) {
-        try {
-            List<User> users;
-            Pageable paging = (Pageable) PageRequest.of(page, size);
-            Page<User> pageProds = null;
-            if (username == null) {
-                pageProds = (Page<User>) userService.getUsers(paging);
-            } else {
-                pageProds = userService.searchUser(username, paging);
-            }
-
-            users = pageProds.getContent();
-            Map<String, Object> response = new HashMap<>();
-            response.put("users", users);
-            response.put("currentPage", pageProds.getNumber());
-            response.put("totalUsers", pageProds.getTotalElements());
-            response.put("totalPages", pageProds.getTotalPages());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            ResponseError responseError = new ResponseError();
+    public ResponseEntity<?> getAllUsers(@RequestBody Users user){
+        ResponseData responseData=new ResponseData();
+        try{
+            List<User> listUsers;
+            Pageable paging= (Pageable) PageRequest.of(
+                    (user.getPage()!=null)?user.getPage():0,
+                    (user.getPageSize()!=null)?user.getPageSize():10);
+        Page<User> pageUsers;
+        pageUsers=userService.getUsers(user,paging);
+        listUsers=pageUsers.getContent();
+        Map<String, Object> response = new HashMap<>();
+        response.put("users",listUsers);
+        response.put("totalUsers",pageUsers.getTotalElements());
+        response.put("currentPage",pageUsers.getNumber());
+        response.put("totalPages",pageUsers.getTotalPages());
+        responseData.setStatusCode(StatusCode.SuccessfulRequest);
+        responseData.setMapData("users",response);
+        }
+        catch(Exception e){
+            ResponseError responseError=new ResponseError();
+            responseError.setStatusCode(StatusCode.InternalError);
             responseError.setErrorMessage(e.getMessage());
             responseError.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.ordinal());
-            responseError.setStatusCode(StatusCode.InternalError);
-            logger.error(e.getMessage(), e);
-            return new ResponseEntity<>(responseError, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(responseError,HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
+
 
 
     @DeleteMapping("/admin/delete/{id}")

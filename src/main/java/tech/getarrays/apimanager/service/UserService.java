@@ -18,6 +18,7 @@ import tech.getarrays.apimanager.exception.UserNotFoundException;
 import tech.getarrays.apimanager.model.User;
 import tech.getarrays.apimanager.model.UserDTO;
 import tech.getarrays.apimanager.payload.HandleUser;
+import tech.getarrays.apimanager.payload.Users;
 import tech.getarrays.apimanager.repo.RefreshTokenRepo;
 import tech.getarrays.apimanager.repo.UserRepo;
 
@@ -80,8 +81,13 @@ public class UserService {
         return userRepo.updateUserRole(userId, id);
     }
 
-    public Page<User> getUsers(Pageable paging) {
-        return (Page<User>) userRepo.findAll(paging);
+    public Page<User> getUsers(Users user, Pageable paging) {
+       Page<User> pageUsers=null;
+       if(user.getUsername()==null)
+           pageUsers=userRepo.findAll(paging);
+       else
+            pageUsers=userRepo.searchUser(user.getUsername(),paging);
+        return pageUsers;
     }
 
     public Optional<User> findUserById(Integer id) {
