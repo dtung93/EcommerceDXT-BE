@@ -17,7 +17,8 @@ import tech.getarrays.apimanager.exception.StatusCode;
 import tech.getarrays.apimanager.model.Order;
 import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.payload.ResponseData;
-import tech.getarrays.apimanager.payload.Users;
+import tech.getarrays.apimanager.payload.UserPaging;
+import tech.getarrays.apimanager.payload.UserPaging;
 import tech.getarrays.apimanager.service.CartService;
 import tech.getarrays.apimanager.service.OrderService;
 
@@ -44,7 +45,7 @@ public class OrderController {
     }
 
     @PostMapping("/all-orders")
-    public ResponseEntity<?> getAllOrders(@RequestBody Users users) {
+    public ResponseEntity<?> getAllOrders(@RequestBody UserPaging users) {
         ResponseData responseData = new ResponseData();
         try {
             List<Order> listorders;
@@ -82,7 +83,7 @@ public class OrderController {
 
 
     @PostMapping("/my-order")
-    public ResponseEntity<?> getOrderByUsername(@RequestBody Users users) {
+    public ResponseEntity<?> getOrderByUsername(@RequestBody UserPaging users) {
         ResponseData responseData = new ResponseData();
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         try {

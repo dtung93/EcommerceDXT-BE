@@ -8,13 +8,21 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name="file_db")
+@Table(name="file_db",uniqueConstraints = {
+        @UniqueConstraint(columnNames = "user_id")
+})
 public class FileDB {
     @Id
     @GeneratedValue
     private Long id;
     private String name;
     private String type;
+
+    @OneToOne(cascade = CascadeType.MERGE,fetch =FetchType.EAGER)
+    @JoinColumn(name="user_id",referencedColumnName ="id")
+    private User user;
+
+
     @Lob
     private byte[] data;
     public FileDB() {
