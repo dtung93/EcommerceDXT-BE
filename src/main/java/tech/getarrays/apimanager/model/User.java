@@ -76,6 +76,12 @@ public class User {
     private String verificationCode;
 
     private boolean enabled;
+    @Transient
+    public String getPhotosImagePath() {
+        if (avatar == null || id == null) return null;
+
+        return "/user-photos/" + id + "/" + avatar;
+    }
 
 //   @OneToOne(mappedBy = "user",fetch=FetchType.LAZY)
 //    private Cart cart;

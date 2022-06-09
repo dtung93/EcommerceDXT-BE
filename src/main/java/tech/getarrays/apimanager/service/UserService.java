@@ -1,30 +1,20 @@
 package tech.getarrays.apimanager.service;
 
-import aj.org.objectweb.asm.Handle;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import tech.getarrays.apimanager.exception.ResponseError;
-import tech.getarrays.apimanager.exception.StatusCode;
-import tech.getarrays.apimanager.exception.UpdateUserException;
 import tech.getarrays.apimanager.exception.UpdateUserException;
 import tech.getarrays.apimanager.exception.UserNotFoundException;
 import tech.getarrays.apimanager.model.User;
 import tech.getarrays.apimanager.model.UserDTO;
-import tech.getarrays.apimanager.payload.HandleUser;
-import tech.getarrays.apimanager.payload.Users;
+import tech.getarrays.apimanager.payload.UserPaging;
 import tech.getarrays.apimanager.repo.RefreshTokenRepo;
 import tech.getarrays.apimanager.repo.UserRepo;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -81,7 +71,7 @@ public class UserService {
         return userRepo.updateUserRole(userId, id);
     }
 
-    public Page<User> getUsers(Users user, Pageable paging) {
+    public Page<User> getUsers(UserPaging user, Pageable paging) {
        Page<User> pageUsers=null;
        if(user.getUsername()==null)
            pageUsers=userRepo.findAll(paging);

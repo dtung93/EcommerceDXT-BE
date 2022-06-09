@@ -1,20 +1,13 @@
 package tech.getarrays.apimanager.service;
 
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.stereotype.Service;
-import tech.getarrays.apimanager.model.Cart;
 import tech.getarrays.apimanager.model.Order;
-import tech.getarrays.apimanager.payload.Users;
+import tech.getarrays.apimanager.payload.UserPaging;
 import tech.getarrays.apimanager.repo.CartRepo;
 import tech.getarrays.apimanager.repo.OrderRepo;
-
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -48,7 +41,7 @@ public class OrderService {
         return orderRepo.save(order);
     }
 
-    public Page<Order> getAllOrders(Users users, Pageable paging) {
+    public Page<Order> getAllOrders(UserPaging users, Pageable paging) {
         Page<Order> orders = null;
         if (
                 (users.getUsername() == null||users.getUsername()=="") &&
