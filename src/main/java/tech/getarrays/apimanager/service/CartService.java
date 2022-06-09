@@ -5,18 +5,12 @@ import org.springframework.stereotype.Service;
 import tech.getarrays.apimanager.model.Cart;
 import tech.getarrays.apimanager.model.CartProduct;
 import tech.getarrays.apimanager.model.Product;
-import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.repo.CartProductRepo;
 import tech.getarrays.apimanager.repo.CartRepo;
 import tech.getarrays.apimanager.repo.ProductRepo;
 
 import javax.transaction.Transactional;
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

@@ -19,7 +19,8 @@ public interface UserRepo extends CrudRepository <User,Integer>, JpaRepository<U
  @Query(nativeQuery = true, value="SELECT * FROM users u where u.verification_code=:verifyCode")
    public User findByVerificationCode(String verifyCode);
 
-
+ @Query(nativeQuery = true,value="select * from users u where u.id=:id")
+public User getId(String id);
 
  @Query(nativeQuery = true, value="update users u set u.password=:newPassword where u.username=:username")
  @Modifying
@@ -45,6 +46,7 @@ int changePassword(String username, String newPassword);
    Page<User> findByUsername(String username,Pageable pageable);
    Page<User> findById(Integer id, Pageable pageable);
    Boolean existsByUsername(String username);
+   @Query("select (count(u) > 0) from User u where u.email = ?1")
    Boolean existsByEmail(String email);
    Optional<User> findById(Long id);
    Page<User> findAll(Pageable pageable);

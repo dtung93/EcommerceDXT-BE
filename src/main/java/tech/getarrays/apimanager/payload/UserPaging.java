@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Users {
+public class UserPaging {
  public String username;
  public Integer page;
  public Integer pageSize;

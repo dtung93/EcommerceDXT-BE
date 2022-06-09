@@ -30,6 +30,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +61,7 @@ public class AuthController {
     RoleRepo roleRepo;
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, String siteUrl) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest,String siteUrl) throws MessagingException, UnsupportedEncodingException, IOException {
   try {
       if (userService.existByUsername(signUpRequest.getUsername())) {
           ResponseError responseError = new ResponseError();
@@ -101,8 +102,6 @@ public class AuthController {
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
         user.setAddress(signUpRequest.getAddress());
         user.setPhone(signUpRequest.getPhone());
-//        String fileName= StringUtils.cleanPath(multipartFile.getOriginalFilename());
-//        user.setAvatar(fileName);
         user.setAvatar(signUpRequest.getAvatar());
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
@@ -140,8 +139,6 @@ public class AuthController {
         user.setEnabled(false);
         userRepo.save(user);
         siteUrl = "http://localhost:4200/verified-account";
-//       String uploadDir="user-photos/" + savedUser.getId();
-//      FileUpLoadService.saveFile(uploadDir,fileName,multipartFile);
         sendVerificationEmail(user, siteUrl, user.getVerificationCode());
         ResponseData responseData = new ResponseData();
         responseData.setStatusCode(StatusCode.Created);
