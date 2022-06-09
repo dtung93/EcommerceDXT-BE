@@ -1,8 +1,6 @@
 package tech.getarrays.apimanager.controller;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -19,8 +17,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.getarrays.apimanager.exception.ResponseError;
 import tech.getarrays.apimanager.exception.StatusCode;
 import tech.getarrays.apimanager.model.FileDB;
-import tech.getarrays.apimanager.model.User;
-import tech.getarrays.apimanager.payload.Avatar;
 import tech.getarrays.apimanager.payload.MessageResponse;
 import tech.getarrays.apimanager.payload.ResponseFile;
 import tech.getarrays.apimanager.service.FileStorageService;
